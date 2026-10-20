@@ -1,0 +1,30 @@
+﻿name: Kompilacja .NET
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pobranie kodu
+        uses: actions/checkout@v7
+
+      - name: Instalacja SDK .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'ga'
+
+      - name: Przywrócenie zależności
+        run: dotnet restore src/PZL.TestApi/PZL.TestApi.csproj
+
+      - name: Kompilacja
+        run: dotnet build src/PZL.TestApi/PZL.TestApi.csproj --configuration Release --no-restore
