@@ -1,0 +1,6 @@
+@PZL.TestApi_HostAddress = http://localhost:5114
+
+GET {{PZL.TestApi_HostAddress}}/
+Accept: text/plain
+
+###
