@@ -37,3 +37,9 @@ coverage/
 # NuGet
 *.nupkg
 packages/
+
+# Lokalna baza SQLite
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
