@@ -1,6 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using PZL.TestApi.Data;
+using PZL.TestApi.Demo;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,42 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 WebApplication app = builder.Build();
+
+string? demoMode = builder.Configuration["demo"];
+
+if (demoMode != null)
+{
+    using (IServiceScope scope = app.Services.CreateScope())
+    {
+        AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        if (demoMode == "crud")
+        {
+            await CrudDemo.RunAsync(context);
+        }
+        else if (demoMode == "read")
+        {
+            int projectId;
+
+            if (!int.TryParse(builder.Configuration["project-id"], out projectId)
+                || projectId <= 0)
+            {
+                Console.WriteLine("Podaj dodatni identyfikator projektu w parametrze --project-id.");
+                Environment.ExitCode = 1;
+                return;
+            }
+
+            await CrudDemo.ReadAsync(context, projectId);
+        }
+        else
+        {
+            Console.WriteLine("Nieznany tryb demonstracji. Użyj --demo=crud lub --demo=read.");
+            Environment.ExitCode = 1;
+        }
+    }
+
+    return;
+}
 
 app.MapGet("/", () =>
 {
